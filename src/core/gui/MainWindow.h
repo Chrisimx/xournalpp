@@ -35,10 +35,11 @@ class ToolMenuHandler;
 class ToolbarData;
 class ToolbarModel;
 class XournalView;
-class MainWindowToolbarMenu;
 class PdfFloatingToolbox;
 class FloatingToolbox;
 class GladeSearchpath;
+
+class Menubar;
 
 class MainWindow: public GladeGui, public LayerCtrlListener {
 public:
@@ -54,10 +55,9 @@ public:
 public:
     void show(GtkWindow* parent) override;
 
-    void setRecentMenu(GtkWidget* submenu);
+    void toolbarSelected(const std::string& id);
     void toolbarSelected(ToolbarData* d);
     ToolbarData* getSelectedToolbar() const;
-    [[maybe_unused]] void reloadToolbars();
 
     /**
      * These methods are only used internally and for toolbar configuration
@@ -110,6 +110,7 @@ public:
 
     bool isGestureActive() const;
 
+    Menubar* getMenubar() const;
 
     /**
      * Disable kinetic scrolling if there is a touchscreen device that was manually mapped to another enabled input
@@ -129,7 +130,7 @@ private:
     void initHideMenu();
     static void toggleMenuBar(MainWindow* win);
 
-    void createToolbarAndMenu();
+    void createToolbar();
     static void rebindAcceleratorsMenuItem(GtkWidget* widget, gpointer user_data);
     static void rebindAcceleratorsSubMenu(GtkWidget* widget, gpointer user_data);
     static gboolean isKeyForClosure(GtkAccelKey* key, GClosure* closure, gpointer data);
@@ -187,13 +188,13 @@ private:
     // Toolbars
     std::unique_ptr<ToolMenuHandler> toolbar;
     ToolbarData* selectedToolbar = nullptr;
-    bool toolbarIntialized = false;
+
+    std::unique_ptr<Menubar> menubar;
 
     bool maximized = false;
 
     GtkWidget** toolbarWidgets;
 
-    MainWindowToolbarMenu* toolbarSelectMenu;
     GtkAccelGroup* globalAccelGroup;
 
     bool sidebarVisible = true;
