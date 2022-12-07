@@ -323,8 +323,8 @@ void ToolMenuHandler::initEraserToolItem() {
 void ToolMenuHandler::signalConnectCallback(GtkBuilder* builder, GObject* object, const gchar* signalName,
                                             const gchar* handlerName, GObject* connectObject, GConnectFlags flags,
                                             ToolMenuHandler* self) {
-    string actionName = handlerName;
-    string groupName{};
+    std::string actionName = handlerName;
+    std::string groupName{};
 
     size_t pos = actionName.find(':');
     if (pos != string::npos) {
