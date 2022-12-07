@@ -12,7 +12,7 @@
 #pragma once
 
 #include <cstddef>  // for size_t
-#include <memory>   // for unique_ptr
+#include <optional>
 #include <string>   // for string, allocator
 #include <vector>   // for vector
 
@@ -45,7 +45,6 @@ class MetadataEntry;
 class MetadataCallbackData;
 class PageBackgroundChangeController;
 class PageTypeHandler;
-class PageTypeMenu;
 class BaseExportJob;
 class LayerController;
 class PluginController;
@@ -263,7 +262,6 @@ public:
     SearchBar* getSearchBar();
     AudioController* getAudioController();
     PageTypeHandler* getPageTypes();
-    PageTypeMenu* getNewPageType();
     PageBackgroundChangeController* getPageBackgroundChangeController();
     LayerController* getLayerController();
     PluginController* getPluginController() const;
@@ -430,7 +428,6 @@ private:
     MetadataManager* metadata;
 
     PageTypeHandler* pageTypes;
-    std::unique_ptr<PageTypeMenu> newPageType;
 
     PageBackgroundChangeController* pageBackgroundChangeController;
 

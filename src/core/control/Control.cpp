@@ -25,7 +25,6 @@
 #include "control/jobs/XournalScheduler.h"                       // for Xour...
 #include "control/layer/LayerController.h"                       // for Laye...
 #include "control/pagetype/PageTypeHandler.h"                    // for Page...
-#include "control/pagetype/PageTypeMenu.h"                       // for Page...
 #include "control/settings/ButtonConfig.h"                       // for Butt...
 #include "control/settings/MetadataManager.h"                    // for Meta...
 #include "control/settings/PageTemplateSettings.h"               // for Page...
@@ -51,6 +50,7 @@
 #include "gui/dialog/ToolbarManageDialog.h"                      // for Tool...
 #include "gui/dialog/toolbarCustomize/ToolbarDragDropHandler.h"  // for Tool...
 #include "gui/inputdevices/HandRecognition.h"                    // for Hand...
+#include "gui/menus/menubar/Menubar.h"                           // for Menubar
 #include "gui/sidebar/Sidebar.h"                                 // for Sidebar
 #include "gui/toolbarMenubar/ToolMenuHandler.h"                  // for Tool...
 #include "gui/toolbarMenubar/model/ToolbarData.h"                // for Tool...
@@ -120,7 +120,6 @@ Control::Control(GApplication* gtkApp, GladeSearchpath* gladeSearchPath): gtkApp
     this->applyPreferredLanguage();
 
     this->pageTypes = new PageTypeHandler(gladeSearchPath);
-    this->newPageType = std::make_unique<PageTypeMenu>(this->pageTypes, settings, true, true);
 
     this->audioController = new AudioController(this->settings, this);
 
@@ -1501,7 +1500,10 @@ void Control::paperTemplate() {
     dlg->show(GTK_WINDOW(this->win->getWindow()));
 
     if (dlg->isSaved()) {
-        newPageType->loadDefaultPage();
+
+        PageTemplateSettings model;
+        model.parse(settings->getPageTemplate());
+        this->win->getToolMenuHandler()->setDefaultNewPageType(model.getPageInsertType());
     }
 }
 
@@ -3184,8 +3186,6 @@ auto Control::getSearchBar() -> SearchBar* { return this->searchBar; }
 auto Control::getAudioController() -> AudioController* { return this->audioController; }
 
 auto Control::getPageTypes() -> PageTypeHandler* { return this->pageTypes; }
-
-auto Control::getNewPageType() -> PageTypeMenu* { return this->newPageType.get(); }
 
 auto Control::getPageBackgroundChangeController() -> PageBackgroundChangeController* {
     return this->pageBackgroundChangeController;

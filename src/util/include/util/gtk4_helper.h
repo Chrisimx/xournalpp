@@ -14,10 +14,29 @@
 
 #include <gtk/gtk.h>
 
+/**** GtkBox ****/
 
-void gtk_box_append(GtkBox* box, GtkWidget* child) {
-    constexpr auto default_expand = false;
-    gtk_box_pack_start(GTK_BOX(box), child, default_expand, true, 0);
-}
+void gtk_box_append(GtkBox* box, GtkWidget* child);
+void gtk_box_remove(GtkBox* box, GtkWidget* child);
 
-void gtk_box_remove(GtkBox* box, GtkWidget* child) { gtk_container_remove(GTK_CONTAINER(box), child); }
+
+/**** GtkCheckButton ****/
+
+void gtk_check_button_set_child(GtkCheckButton* button, GtkWidget* child);
+void gtk_check_button_set_label(GtkCheckButton* button, const char* label);
+
+
+/**** GtkButton ****/
+
+void gtk_button_set_child(GtkButton* button, GtkWidget* child);
+GtkWidget* gtk_button_get_child(GtkButton* button);
+
+
+/**** GtkPopover ****/
+
+GtkWidget* gtk_popover_new();
+void gtk_popover_set_child(GtkPopover* popover, GtkWidget* child);
+
+
+/**** GtkLabel ****/
+void gtk_label_set_wrap(GtkLabel* label, gboolean wrap);

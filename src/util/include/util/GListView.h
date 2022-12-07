@@ -16,9 +16,8 @@
 
 #include "gtk/gtk.h"
 
-template <typename T>
-
-struct GListView {
+template <class ListType, typename T>
+struct ListView {
     struct GListViewIter {
         constexpr auto operator++() -> GListViewIter& {
             this->list = list->next;
@@ -32,7 +31,7 @@ struct GListView {
         }
 
         constexpr friend auto operator==(GListViewIter const& lhs, GListViewIter const& rhs) -> bool {
-            auto tier = [](GList const& list) { return std::tie(list.data, list.next, list.prev); };
+            auto tier = [](ListType const& list) { return std::tie(list.data, list.next, list.prev); };
             return (lhs.list == rhs.list) ||
                    (lhs.list != nullptr && rhs.list != nullptr && tier(*lhs.list) == tier(*rhs.list));
         }
@@ -45,7 +44,7 @@ struct GListView {
 
         constexpr T* operator->() { return static_cast<T*>(list->data); }
 
-        GList* list{};
+        ListType* list{};
     };
 
     struct GListViewSentinel {
@@ -63,7 +62,7 @@ struct GListView {
         }
     };
 
-    constexpr GListView(GList* list): list(list) {}
+    constexpr ListView(ListType* list): list(list) {}
 
     constexpr auto begin() -> GListViewIter { return {list}; }
     // /// Slow, iterates over all elements to find the end
@@ -76,5 +75,10 @@ struct GListView {
     constexpr auto end_iter() -> GListViewIter { return nullptr; }
 
 private:
-    GList* list;
+    ListType* list;
 };
+
+template <typename T>
+using GListView = ListView<GList, T>;
+template <typename T>
+using GSListView = ListView<GSList, T>;

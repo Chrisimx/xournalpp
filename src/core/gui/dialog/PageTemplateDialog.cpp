@@ -13,11 +13,13 @@
 #include "control/pagetype/PageTypeHandler.h"  // for PageTypeInfo, PageType...
 #include "control/settings/Settings.h"         // for Settings
 #include "control/stockdlg/XojOpenDlg.h"       // for XojOpenDlg
-#include "gui/widgets/PopupMenuButton.h"       // for PopupMenuButton
-#include "model/FormatDefinitions.h"           // for FormatUnits, XOJ_UNITS
-#include "util/Color.h"                        // for GdkRGBA_to_argb, rgb_t...
-#include "util/PathUtil.h"                     // for fromGFilename, readString
-#include "util/i18n.h"                         // for _
+#include "gui/menus/popoverMenus/PageTypeSelectionPopoverGridOnly.h"
+#include "gui/widgets/PopupMenuButton.h"  // for PopupMenuButton
+#include "model/FormatDefinitions.h"      // for FormatUnits, XOJ_UNITS
+#include "model/PageType.h"               // for PageType
+#include "util/Color.h"                   // for GdkRGBA_to_argb, rgb_t...
+#include "util/PathUtil.h"                // for fromGFilename, readString
+#include "util/i18n.h"                    // for _
 
 #include "FormatDialog.h"  // for FormatDialog
 #include "filesystem.h"    // for path
@@ -27,11 +29,10 @@ class GladeSearchpath;
 PageTemplateDialog::PageTemplateDialog(GladeSearchpath* gladeSearchPath, Settings* settings, PageTypeHandler* types):
         GladeGui(gladeSearchPath, "pageTemplate.glade", "templateDialog"),
         settings(settings),
-        pageMenu(new PageTypeMenu(types, settings, true, false)),
-        popupMenuButton(new PopupMenuButton(get("btBackgroundDropdown"), pageMenu->getMenu())) {
+        types(types),
+        pageTypeSelectionMenu(std::make_unique<PageTypeSelectionPopoverGridOnly>(types, settings, this)),
+        popupMenuButton(new PopupMenuButton(get("btBackgroundDropdown"), pageTypeSelectionMenu->getPopover())) {
     model.parse(settings->getPageTemplate());
-
-    pageMenu->setListener(this);
 
     g_signal_connect(
             get("btChangePaperSize"), "clicked",
@@ -57,13 +58,14 @@ void PageTemplateDialog::updateDataFromModel() {
 
     updatePageSize();
 
-    pageMenu->setSelected(model.getBackgroundType());
+    pageTypeSelectionMenu->setSelected(model.getBackgroundType());
+    changeCurrentPageBackground(types->getInfoOn(model.getBackgroundType()));
 
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(get("cbCopyLastPage")), model.isCopyLastPageSettings());
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(get("cbCopyLastPageSize")), model.isCopyLastPageSize());
 }
 
-void PageTemplateDialog::changeCurrentPageBackground(PageTypeInfo* info) {
+void PageTemplateDialog::changeCurrentPageBackground(const PageTypeInfo* info) {
     model.setBackgroundType(info->page);
 
     gtk_label_set_text(GTK_LABEL(get("lbBackgroundType")), info->name.c_str());
@@ -117,6 +119,8 @@ void PageTemplateDialog::saveToFile() {
 
     std::ofstream out{filepath};
     out << model.toString();
+
+    printf("saved to file\n");
 }
 
 void PageTemplateDialog::loadFromFile() {

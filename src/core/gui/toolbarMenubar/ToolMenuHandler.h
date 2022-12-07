@@ -13,9 +13,11 @@
 
 #include <cstddef>  // for size_t
 #include <memory>
+#include <optional>
 #include <string>  // for string
 #include <vector>  // for vector
 
+#include <gio/gio.h>
 #include <glib-object.h>  // for GObject, GConnectFlags
 #include <glib.h>         // for gchar
 #include <gtk/gtk.h>      // for GtkWidget, GtkWindow, GtkBuilder
@@ -24,6 +26,7 @@
 #include "enums/ActionType.enum.h"   // for ActionType
 #include "gui/IconNameHelper.h"      // for IconNameHelper
 #include "util/Color.h"              // for Color
+#include "util/raii/GObjectSPtr.h"
 
 class AbstractToolItem;
 class FontButton;
@@ -44,6 +47,8 @@ class PageBackgroundChangeController;
 class ActionHandler;
 class ColorToolItem;
 class MenuItem;
+class PageTypeSelectionPopover;
+class PageType;
 
 class ToolMenuHandler {
 public:
@@ -103,6 +108,8 @@ public:
     void setAudioPlaybackPaused(bool paused);
     std::string iconName(const char* icon);
 
+    void setDefaultNewPageType(const std::optional<PageType>& pt);
+
 private:
     void addToolItem(AbstractToolItem* it);
 
@@ -142,4 +149,8 @@ private:
     PageTypeMenu* newPageType = nullptr;
     PageBackgroundChangeController* pageBackgroundChangeController = nullptr;
     IconNameHelper iconNameHelper;
+
+    std::unique_ptr<PageTypeSelectionPopover> pageTypeSelectionPopup;
+
+    xoj::util::GObjectSPtr<GSimpleAction> gAction;
 };

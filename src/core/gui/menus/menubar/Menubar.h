@@ -17,6 +17,7 @@ class MainWindow;
 
 class RecentDocumentsSubmenu;
 class ToolbarSelectionSubmenu;
+class PageTypeSubmenu;
 class PluginsSubmenu;
 
 class Menubar {
@@ -28,6 +29,7 @@ public:
 
 public:
     inline ToolbarSelectionSubmenu& getToolbarSelectionSubmenu() const { return *toolbarSelectionSubmenu; }
+    inline PageTypeSubmenu& getPageTypeSubmenu() const { return *pageTypeSubmenu; }
 
     void setDisabled(bool disabled);
 
@@ -35,12 +37,14 @@ private:
     // Dynamically created submenus -- also add to forEachSubmenu() below
     std::unique_ptr<RecentDocumentsSubmenu> recentDocumentsSubmenu;
     std::unique_ptr<ToolbarSelectionSubmenu> toolbarSelectionSubmenu;
+    std::unique_ptr<PageTypeSubmenu> pageTypeSubmenu;
     std::unique_ptr<PluginsSubmenu> pluginsSubmenu;
 
     template <class Fun>
     void forEachSubmenu(Fun&& fun) {
         fun(*recentDocumentsSubmenu);
         fun(*toolbarSelectionSubmenu);
+        fun(*pageTypeSubmenu);
         fun(*pluginsSubmenu);
     }
 };
