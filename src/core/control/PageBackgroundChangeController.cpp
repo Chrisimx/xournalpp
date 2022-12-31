@@ -84,6 +84,9 @@ void PageBackgroundChangeController::changeCurrentPageBackground(const PageType&
 void PageBackgroundChangeController::setPageTypeForNewPages(const std::optional<PageType>& pt) {
     this->pageTypeForNewPages = pt;
 }
+void PageBackgroundChangeController::setPaperSizeForNewPages(const std::optional<PaperSize>& ps) {
+    this->paperSizeForNewPages = ps;
+}
 
 auto PageBackgroundChangeController::commitPageTypeChange(const size_t pageNum, const PageType& pageType)
         -> std::unique_ptr<UndoAction> {
@@ -230,9 +233,6 @@ auto PageBackgroundChangeController::applyPageBackground(PageRef page, const Pag
  * Copy the background from source to target
  */
 void PageBackgroundChangeController::copyBackgroundFromOtherPage(PageRef target, PageRef source) {
-    // Copy page size
-    target->setSize(source->getWidth(), source->getHeight());
-
     // Copy page background type
     PageType bg = source->getBackgroundType();
     target->setBackgroundType(bg);
@@ -260,8 +260,13 @@ void PageBackgroundChangeController::insertNewPage(size_t position) {
     PageTemplateSettings model;
     model.parse(control->getSettings()->getPageTemplate());
 
-    auto page = std::make_shared<XojPage>(model.getPageWidth(), model.getPageHeight());
     PageRef current = control->getCurrentPage();
+
+    std::shared_ptr<XojPage> page;
+    if (paperSizeForNewPages)
+        page = std::make_shared<XojPage>(paperSizeForNewPages->width, paperSizeForNewPages->height);
+    else if (current)
+        page = std::make_shared<XojPage>(current->getWidth(), current->getHeight());
 
     // current should always be valid, but if you open an invalid file or something like this...
     if (!pageTypeForNewPages && current) {
@@ -275,10 +280,6 @@ void PageBackgroundChangeController::insertNewPage(size_t position) {
 
         // Set background Color
         page->setBackgroundColor(model.getBackgroundColor());
-
-        if (model.isCopyLastPageSize() && current) {
-            page->setSize(current->getWidth(), current->getHeight());
-        }
     }
 
     control->insertPage(page, position);
@@ -300,5 +301,5 @@ void PageBackgroundChangeController::pageSelected(size_t page) {
         return;
     }
 
-    control->getWindow()->getMenubar()->getPageTypeSubmenu().setSelected(current->getBackgroundType());
+    control->getWindow()->getMenubar()->getPageTypeSubmenu().setSelectedPageType(current->getBackgroundType());
 }
