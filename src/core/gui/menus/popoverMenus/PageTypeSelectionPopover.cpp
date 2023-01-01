@@ -37,7 +37,7 @@ GtkWidget* createEntryWithoutPreview(const char* label, size_t entryNb, const st
 PageTypeSelectionPopover::PageTypeSelectionPopover(PageTypeHandler* typesHandler,
                                                    PageBackgroundChangeController* controller, const Settings* settings,
                                                    GtkApplicationWindow* win):
-        PageTypeSelectionPopoverBase(typesHandler, settings, SELECTION_ACTION_NAME),
+        PageTypeSelectionPopoverBase(typesHandler, settings, PAGETYPE_SELECTION_ACTION_NAME),
         controller(controller),
         popover(createPopover()) {
     static_assert(is_action_namespace_match<decltype(win)>(G_ACTION_NAMESPACE));
@@ -100,13 +100,13 @@ xoj::util::WidgetSPtr PageTypeSelectionPopover::createPopover() {
     xoj::util::WidgetSPtr popover(gtk_popover_new(), xoj::util::adopt);
 
     // Todo(cpp20): constexpr this
-    std::string prefixedActionName = G_ACTION_NAMESPACE;
-    prefixedActionName += SELECTION_ACTION_NAME;
+    std::string prefixedPageTypeActionName = G_ACTION_NAMESPACE;
+    prefixedPageTypeActionName += PAGETYPE_SELECTION_ACTION_NAME;
 
     // Todo(gtk4): remove radioGroup (see other comments)
     GtkWidget* radioGroup = nullptr;
 
-    GtkWidget* grid = createPreviewGrid(types->getPageTypes(), prefixedActionName, radioGroup);
+    GtkWidget* grid = createPreviewGrid(types->getPageTypes(), prefixedPageTypeActionName, radioGroup);
 
     GtkBox* box = GTK_BOX(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0));
     gtk_popover_set_child(GTK_POPOVER(popover.get()), GTK_WIDGET(box));
@@ -116,12 +116,13 @@ xoj::util::WidgetSPtr PageTypeSelectionPopover::createPopover() {
 
     // Create a special entry for copying the current page's background
     // It has index == npos
-    gtk_box_append(box, createEntryWithoutPreview(_("Copy current"), npos, prefixedActionName, radioGroup));
+    gtk_box_append(box, createEntryWithoutPreview(_("Copy current"), npos, prefixedPageTypeActionName, radioGroup));
 
     // The indices of special page types start after the normal page types'
     size_t n = types->getPageTypes().size();
     for (const auto& pageInfo: types->getSpecialPageTypes()) {
-        gtk_box_append(box, createEntryWithoutPreview(pageInfo->name.c_str(), n++, prefixedActionName, radioGroup));
+        gtk_box_append(box,
+                       createEntryWithoutPreview(pageInfo->name.c_str(), n++, prefixedPageTypeActionName, radioGroup));
     }
 
     // Todo(gtk4): remove radioGroup (see other comments)
@@ -158,7 +159,7 @@ xoj::util::WidgetSPtr PageTypeSelectionPopover::createPopover() {
     return popover;
 }
 
-void PageTypeSelectionPopover::setSelected(const std::optional<PageType>& selected) {
+void PageTypeSelectionPopover::setSelectedPageType(const std::optional<PageType>& selected) {
     // Todo(gtk4): remove this specialization entirely
     if (this->selectedPT != selected) {
         auto group = GSListView<GtkRadioButton>(gtk_radio_button_get_group(GTK_RADIO_BUTTON(radioButtonGroup.get())));

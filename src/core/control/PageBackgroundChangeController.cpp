@@ -53,7 +53,7 @@ void PageBackgroundChangeController::applyBackgroundToAllPages(const PageType& p
 
     control->getUndoRedoHandler()->addUndoAction(std::move(groupUndoAction));
 
-    control->getWindow()->getMenubar()->getPageTypeSubmenu().setSelected(pt);
+    control->getWindow()->getMenubar()->getPageTypeSubmenu().setSelectedPageType(pt);
 }
 
 void PageBackgroundChangeController::applyCurrentPageBackgroundToAll() {
@@ -78,7 +78,7 @@ void PageBackgroundChangeController::changeCurrentPageBackground(const PageType&
         control->getUndoRedoHandler()->addUndoAction(std::move(undoAction));
     }
 
-    control->getWindow()->getMenubar()->getPageTypeSubmenu().setSelected(pageType);
+    control->getWindow()->getMenubar()->getPageTypeSubmenu().setSelectedPageType(pageType);
 }
 
 void PageBackgroundChangeController::setPageTypeForNewPages(const std::optional<PageType>& pt) {

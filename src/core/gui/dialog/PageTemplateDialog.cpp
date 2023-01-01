@@ -58,7 +58,7 @@ void PageTemplateDialog::updateDataFromModel() {
 
     updatePageSize();
 
-    pageTypeSelectionMenu->setSelected(model.getBackgroundType());
+    pageTypeSelectionMenu->setSelectedPageType(model.getBackgroundType());
     changeCurrentPageBackground(types->getInfoOn(model.getBackgroundType()));
 
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(get("cbCopyLastPage")), model.isCopyLastPageSettings());

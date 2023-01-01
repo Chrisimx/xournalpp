@@ -38,7 +38,7 @@ public:
      *      This specialization is a workaround for a GTK-3 bug, where an infinite loop starts when grouped radio
      * buttons are linked to a GAction, and the state of this action is changed.
      */
-    void setSelected(const std::optional<PageType>& selected) override;
+    void setSelectedPageType(const std::optional<PageType>& selected) override;
 
 private:
     /**
@@ -81,5 +81,5 @@ private:
 
 public:
     static constexpr auto G_ACTION_NAMESPACE = "win.";
-    static constexpr auto SELECTION_ACTION_NAME = "select-page-type-of-new-page";
+    static constexpr auto PAGETYPE_SELECTION_ACTION_NAME = "select-page-type-of-new-page";
 };
