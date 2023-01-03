@@ -306,9 +306,14 @@ void PageTypeSelectionPopover::setSelectedPageType(const std::optional<PageType>
     }
 }
 
-void PageTypeSelectionPopover::entrySelected(const PageTypeInfo*) {
+void PageTypeSelectionPopover::entrySelected(const PageTypeInfo* info) {
     // We cannot "Apply to current page" if no page type is selected...
     gtk_widget_set_sensitive(this->applyToCurrentPageButton.get(), this->selectedPT.has_value());
+
+    // Enable for all page types except special ones (PDF and image)
+    bool shouldPageFormatSettingsBeEnabled = !this->selectedPT.has_value() || !this->selectedPT->isSpecial();
+    gtk_widget_set_sensitive(this->pageFormatComboBox.get(), shouldPageFormatSettingsBeEnabled);
+    g_simple_action_set_enabled(this->orientationAction.get(), shouldPageFormatSettingsBeEnabled);
 
     this->controller->setPageTypeForNewPages(this->selectedPT);
 }
