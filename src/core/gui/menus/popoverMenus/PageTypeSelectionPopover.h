@@ -16,7 +16,10 @@
 
 #include <gtk/gtk.h>  // for GtkWidget
 
+#include "control/settings/PageTemplateSettings.h"
 #include "gui/menus/popoverMenus/PageTypeSelectionPopoverBase.h"
+#include "model/PaperSize.h"
+#include "util/PaperFormatUtils.h"
 #include "util/raii/GObjectSPtr.h"
 
 class PageBackgroundChangeController;
@@ -66,9 +69,23 @@ private:
     xoj::util::WidgetSPtr createPopover();
     void entrySelected(const PageTypeInfo* info) override;
 
+    static GSimpleAction* createOrientationGAction(uint8_t orientation);
+    std::optional<PaperSize> getInitiallySelectedPaperSize();
+    int getComboBoxIndexForPaperSize(const std::optional<PaperSize>& paperSize);
+
+    GtkWidget* createOrientationButton(std::string_view actionName, GtkOrientation orientation, std::string_view icon);
 private:
     PageBackgroundChangeController* controller;
+    Settings* settings;
 
+    std::optional<PaperSize> selectedPageSize;
+
+    GtkOrientation selectedOrientation;
+    xoj::util::GObjectSPtr<GSimpleAction> orientationAction;
+
+    PaperFormatUtils::PaperFormatMenuOptionVector_t paperSizeMenuOptions;
+
+    xoj::util::WidgetSPtr pageFormatComboBox;
     /**
      * @brief Pointer to one of the radio button, so that the radio button group is readily accessible.
      *
@@ -82,4 +99,5 @@ private:
 public:
     static constexpr auto G_ACTION_NAMESPACE = "win.";
     static constexpr auto PAGETYPE_SELECTION_ACTION_NAME = "select-page-type-of-new-page";
+    static constexpr auto ORIENTATION_SELECTION_ACTION_NAME = "select-page-orientation-of-new-page";
 };
