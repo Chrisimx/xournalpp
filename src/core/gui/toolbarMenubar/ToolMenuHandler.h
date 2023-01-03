@@ -111,6 +111,7 @@ public:
     std::string iconName(const char* icon);
 
     void setDefaultNewPageType(const std::optional<PageType>& pt);
+    void setDefaultNewPaperSize(const std::optional<PaperSize>& paperSize);
 
 private:
     void addToolItem(AbstractToolItem* it);

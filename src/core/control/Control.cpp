@@ -1504,6 +1504,8 @@ void Control::paperTemplate() {
         PageTemplateSettings model;
         model.parse(settings->getPageTemplate());
         this->win->getToolMenuHandler()->setDefaultNewPageType(model.getPageInsertType());
+        this->win->getToolMenuHandler()->setDefaultNewPaperSize(
+                model.isCopyLastPageSize() ? std::nullopt : std::optional(PaperSize(model)));
     }
 }
 
