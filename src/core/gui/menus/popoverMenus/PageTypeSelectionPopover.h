@@ -77,6 +77,8 @@ private:
     void entrySelected(const PageTypeInfo* info) override;
 
     static GSimpleAction* createOrientationGAction(uint8_t orientation);
+    static void changedOrientationSelectionCallback(GSimpleAction* ga, GVariant* parameter,
+                                                   PageTypeSelectionPopover* self);
     static void changedPaperFormatTemplateCb(GtkComboBox* widget, PageTypeSelectionPopover* dlg);
     std::optional<PaperSize> getInitiallySelectedPaperSize();
     int getComboBoxIndexForPaperSize(const std::optional<PaperSize>& paperSize);

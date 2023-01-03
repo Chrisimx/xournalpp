@@ -52,6 +52,8 @@ PageTypeSelectionPopover::PageTypeSelectionPopover(Control* control, Settings* s
     orientationAction.reset(createOrientationGAction(selectedOrientation), xoj::util::adopt);
     g_action_map_add_action(G_ACTION_MAP(win), G_ACTION(orientationAction.get()));
     g_simple_action_set_enabled(orientationAction.get(), selectedPageSize.has_value());
+    g_signal_connect(G_OBJECT(orientationAction.get()), "change-state", G_CALLBACK(changedOrientationSelectionCallback),
+                     this);
 
     g_action_map_add_action(G_ACTION_MAP(win), G_ACTION(typeSelectionAction.get()));
 }
@@ -66,6 +68,15 @@ auto PageTypeSelectionPopover::getInitiallySelectedPaperSize() -> std::optional<
 auto PageTypeSelectionPopover::createOrientationGAction(uint8_t orientation) -> GSimpleAction* {
     return g_simple_action_new_stateful(ORIENTATION_SELECTION_ACTION_NAME, G_VARIANT_TYPE_BOOLEAN,
                                         g_variant_new_boolean(orientation));
+}
+void PageTypeSelectionPopover::changedOrientationSelectionCallback(GSimpleAction* ga, GVariant* parameter,
+                                                                   PageTypeSelectionPopover* self) {
+    g_simple_action_set_state(ga, parameter);
+    self->selectedOrientation = static_cast<GtkOrientation>(g_variant_get_boolean(parameter));
+    if (self->selectedPageSize && (self->selectedPageSize->orientation() != self->selectedOrientation)) {
+        self->selectedPageSize->swapWidthHeight();
+        self->controller->setPaperSizeForNewPages(self->selectedPageSize);
+    }
 }
 GtkWidget* PageTypeSelectionPopover::createEntryWithPreview(const PageTypeInfo* pti, size_t entryNb,
                                                             const std::string_view& prefixedActionName,
