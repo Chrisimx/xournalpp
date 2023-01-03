@@ -117,7 +117,21 @@ GtkWidget* PageTypeSelectionPopover::createPreviewGrid(const std::vector<std::un
     }
     return GTK_WIDGET(grid);
 }
+template <bool changeComboBoxSelection>
+void PageTypeSelectionPopover::setSelectedPaperSize(const std::optional<PaperSize>& newPageSize) {
+    if (newPageSize != selectedPageSize) {
+        if constexpr (changeComboBoxSelection)
+            gtk_combo_box_set_active(GTK_COMBO_BOX(pageFormatComboBox.get()),
+                                     getComboBoxIndexForPaperSize(newPageSize));
 
+        selectedPageSize = newPageSize;
+        if (selectedPageSize)
+            g_simple_action_set_state(orientationAction.get(), g_variant_new_boolean(selectedPageSize->orientation()));
+        g_simple_action_set_enabled(orientationAction.get(), selectedPageSize.has_value());
+
+        controller->setPaperSizeForNewPages(selectedPageSize);
+    }
+}
 int PageTypeSelectionPopover::getComboBoxIndexForPaperSize(const std::optional<PaperSize>& paperSize) {
     if (!paperSize)
         return paperSizeMenuOptions.size() - 1;  // Return index of copy option

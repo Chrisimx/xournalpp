@@ -43,6 +43,13 @@ public:
      */
     void setSelectedPageType(const std::optional<PageType>& selected) override;
 
+    /**
+     * @brief Sets the selected paper size of the menu.
+     * @tparam changeComboBoxSelection Whether the combo box selection will be changed to a fitting option
+     */
+    template <bool changeComboBoxSelection = true>
+    void setSelectedPaperSize(const std::optional<PaperSize>& newPageSize);
+
 private:
     /**
      * @brief Create a togglebutton containing a miniature of the given (standard) page type
