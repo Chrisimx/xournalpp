@@ -16,6 +16,7 @@
 
 #include <gtk/gtk.h>  // for GtkWidget
 
+#include "control/Control.h"
 #include "control/settings/PageTemplateSettings.h"
 #include "gui/menus/popoverMenus/PageTypeSelectionPopoverBase.h"
 #include "model/PaperSize.h"
@@ -29,8 +30,7 @@ class Settings;
 
 class PageTypeSelectionPopover: public PageTypeSelectionPopoverBase {
 public:
-    PageTypeSelectionPopover(PageTypeHandler* typesHandler, PageBackgroundChangeController* controller,
-                             const Settings* settings, GtkApplicationWindow* win);
+    PageTypeSelectionPopover(Control* control, Settings* settings, GtkApplicationWindow* win);
     ~PageTypeSelectionPopover() override = default;
 
 public:
@@ -77,11 +77,13 @@ private:
     void entrySelected(const PageTypeInfo* info) override;
 
     static GSimpleAction* createOrientationGAction(uint8_t orientation);
+    static void changedPaperFormatTemplateCb(GtkComboBox* widget, PageTypeSelectionPopover* dlg);
     std::optional<PaperSize> getInitiallySelectedPaperSize();
     int getComboBoxIndexForPaperSize(const std::optional<PaperSize>& paperSize);
 
     GtkWidget* createOrientationButton(std::string_view actionName, GtkOrientation orientation, std::string_view icon);
 private:
+    Control* control;
     PageBackgroundChangeController* controller;
     Settings* settings;
 

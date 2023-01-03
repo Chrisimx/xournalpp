@@ -25,7 +25,9 @@
 #include "enums/ActionGroup.enum.h"  // for GROUP_NOGROUP, ActionGroup
 #include "enums/ActionType.enum.h"   // for ActionType
 #include "gui/IconNameHelper.h"      // for IconNameHelper
-#include "util/Color.h"              // for Color
+#include "model/PaperSize.h"
+#include "util/Color.h"  // for Color
+#include "util/PaperFormatUtils.h"
 #include "util/raii/GObjectSPtr.h"
 
 class AbstractToolItem;
